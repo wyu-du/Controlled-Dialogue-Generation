@@ -420,6 +420,8 @@ if __name__ == '__main__':
                    help="specify the dataset: dailydialog_raw, convai2_raw")
     p.add_argument('--model_name', type=str, default="microsoft/DialoGPT-medium", 
                    help="specify the model name: gpt2-medium, microsoft/DialoGPT-medium")
+    p.add_argument('--no_da', action='store_true', 
+                   help="specify whether include DA tags in inputs")
     p.add_argument('-bz', '--batch_size', type=int, default=4)
     p.add_argument('--encoder_max_length', type=int, default=200)
     p.add_argument('--decoder_max_length', type=int, default=60)

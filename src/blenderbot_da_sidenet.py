@@ -442,29 +442,6 @@ def train(args):
     
     
 
-def generate_label(batch, model, tokenizer, args, device='cuda:0'):
-  """
-  Function to generate outputs from a model with beam search decoding. 
-  """
-  # Create batch inputs.
-  features, labels = make_batch_data(batch, tokenizer, args, device)
-  da_ids = labels['input_ids'][:, 0]
-  # Generate preds.
-  with torch.no_grad():
-      outputs = model(input_ids=features['input_ids'],
-                      labels=labels['input_ids'][:, 1:],
-                      decoder_da_inputs=da_ids,
-                      decoder_dis_loss=True)
-  logits = F.softmax(outputs.logits, dim=-1)
-  preds = torch.argmax(logits, dim=-1)
-  correct = 0
-  for i in range(preds.size(0)):
-      if preds[i] == da_ids[i]:
-          correct += 1
-  return [correct]
-
-
-
 def generate_sentences(batch,
                        model, 
                        tokenizer,
@@ -561,44 +538,6 @@ def test(args):
       
       
       
-def predict(args):
-    te_df = parse_data(in_file=f'../data/{args.dataset}.json', mode='test')
-    print('Data loaded!!!')
-    
-    # Load the model
-    tokenizer = BlenderbotTokenizer.from_pretrained(f"{args.model_name}_{args.dataset}_{args.flag}_{args.timestamp}/checkpoint-{args.ckpt}")
-    print(f"Vocab size: {len(tokenizer)}")
-    
-    model = Seq2SeqModel.from_pretrained(f"{args.model_name}_{args.dataset}_{args.flag}_{args.timestamp}/checkpoint-{args.ckpt}")
-    model.method = args.method
-    model.pretrain_clf = args.pretrain_clf
-    model.lamb = args.lamb
-    model = model.to('cuda:0')
-    print('Model loaded!!!')
-    
-    # Make predictions
-    test_output = Dataset.from_pandas(te_df).map(
-        lambda batch: {'correct': generate_label(
-            batch,
-            model, 
-            tokenizer, 
-            args,
-            device='cuda:0')
-        },
-        batched=True, 
-        batch_size=1,
-    )
-    
-    # prepare evaluation data
-    pred_list = list(test_output)
-    correct, total = 0, 0
-    for item in pred_list:
-        correct += item['correct']
-        total += 1
-    print(f'Accuracy: {round(correct/total, 4)}')
-
-      
-    
 def decode_time(args):
     te_df = parse_data(in_file=f'../data/{args.dataset}.json', mode='test')
     print('Data loaded!!!')
@@ -662,6 +601,8 @@ if __name__ == '__main__':
     p.add_argument('--pretrain_clf', action='store_true', 
                    help="specify whether pretraining a classifier or finetuning the sidenet")
     p.add_argument('--lamb', type=float, default=1.0)
+    p.add_argument('--no_da', action='store_true', 
+                   help="specify whether include DA tags in inputs")
     p.add_argument('-bz', '--batch_size', type=int, default=4)
     p.add_argument('--encoder_max_length', type=int, default=128)
     p.add_argument('--decoder_max_length', type=int, default=60)
@@ -682,8 +623,6 @@ if __name__ == '__main__':
         train(args)
     elif args.task == 'eval':
         test(args)
-    elif args.task == 'pred':
-        predict(args)
     elif args.task == 'dect':
         decode_time(args)
     else:

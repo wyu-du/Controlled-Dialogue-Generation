@@ -292,7 +292,7 @@ def test(args):
 
 
 def predict(args):
-    te_df = parse_pred_data(file_path='../outputs/', 
+    te_df = parse_pred_data(file_path='', 
                             output_file=args.output_file,
                             ref_file=args.ref_file)
     print('Data loaded!!!')
@@ -331,12 +331,6 @@ def predict(args):
             correct += 1
         total += 1
     print(f'Accuracy: {round(correct/total, 4)}')
-    
-    if not os.path.exists('../outputs/da_preds/'):
-        os.makedirs('../outputs/da_preds/')
-    out_file = '../outputs/da_preds/' + args.output_file
-    with open(out_file, 'w') as f:
-      f.write(json.dumps(prediction_dict, indent=2))
 
 
 if __name__ == '__main__':

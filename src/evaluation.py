@@ -154,16 +154,16 @@ def compute_cos_sim(references, candidates):
 def read_data(ref_file, in_file, mode='kb'):
     references, candidates = [], []
     if mode == 'kb':
-        with open('../outputs/'+ref_file, 'r') as f:
+        with open(ref_file, 'r') as f:
             ref_list = json.load(f)['values']
             for ref in ref_list:
                 references.append(ref['profile'])
     else:
-        with open('../outputs/'+ref_file, 'r') as f:
+        with open(ref_file, 'r') as f:
             ref_list = json.load(f)['values']
             for ref in ref_list:
                 references.append(ref['target'][0])
-    with open('../outputs/'+in_file, 'r') as f:
+    with open(in_file, 'r') as f:
         out_list = json.load(f)['values']
         for out in out_list:
             candidates.append(out['generated'])

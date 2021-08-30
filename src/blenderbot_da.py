@@ -421,6 +421,8 @@ if __name__ == '__main__':
                    help="specify the dataset: dailydialog_raw, convai2_raw")
     p.add_argument('--model_name', type=str, default="facebook/blenderbot-400M-distill", 
                    help="specify the model name: t5-base, facebook/blenderbot-400M-distill")
+    p.add_argument('--no_da', action='store_true', 
+                   help="specify whether include DA tags in inputs")
     p.add_argument('-bz', '--batch_size', type=int, default=4)
     p.add_argument('--encoder_max_length', type=int, default=128)
     p.add_argument('--decoder_max_length', type=int, default=60)
