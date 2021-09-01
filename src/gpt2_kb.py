@@ -198,10 +198,9 @@ class Seq2SeqTrainer(Trainer):
 
 def train(args):
     # Load the dataset
-    df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='train')
-    train_len = 153080
-    trn_df = df.iloc[:train_len, :]
-    val_df = df.iloc[train_len:, :]
+    trn_df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='train')
+    val_df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='validation')
+    val_df = val_df.iloc[:int(0.8*len(val_df)),:]
     
     # Load the pre-trained model
     ckpt_path = None
@@ -299,6 +298,7 @@ def generate_sentences(batch,
 def test(args):
     if args.dataset == 'convai2_raw':
         te_df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='validation')
+        te_df = te_df.iloc[int(0.8*len(te_df)):,:]
     else:
         te_df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='test')
     print('Data loaded!!!')
