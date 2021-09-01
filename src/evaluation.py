@@ -6,7 +6,6 @@ import numpy as np
 import json
 import argparse
 import torch
-from transformers import OpenAIGPTTokenizer, OpenAIGPTLMHeadModel
 import gensim.downloader as api
 
 def compute_bleu(references, candidates):
@@ -26,22 +25,6 @@ def compute_bleu(references, candidates):
                         weights=(0, 1, 0, 0))
     print("BLEU-1: "+str(round(bleu1,4)))
     print("BLEU-2: "+str(round(bleu2,4)))
-    
-def compute_ppl(candidates):
-    model = OpenAIGPTLMHeadModel.from_pretrained("openai-gpt").to('cuda:0')
-    tokenizer = OpenAIGPTTokenizer.from_pretrained("openai-gpt")
-    
-    lls = []
-    for i in range(len(candidates)):
-        inputs = tokenizer(candidates[i], return_tensors='pt')
-        inputs = dict([(k, v.to('cuda:0')) for k, v in inputs.items()])
-        with torch.no_grad():
-            if inputs["input_ids"].size(-1) > 1:
-                outputs = model(**inputs, labels=inputs["input_ids"])
-                loss = outputs.loss.item()
-        lls.append(loss)
-    ppl = np.exp(np.mean(lls))
-    print("GPT Perplexity: "+str(round(ppl,4)))
     
 def compute_meteor(references, candidates):
     score_list = []
@@ -173,7 +156,7 @@ def read_data(ref_file, in_file, mode='kb'):
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description='Hyperparams')
     p.add_argument('-m', '--mode', type=str, default="sent")
-    p.add_argument('-r', '--reference_file', type=str, default="refs.json")
+    p.add_argument('-r', '--reference_file', type=str, default="blenderbot-400M-distill_dailydialog_raw_zero_0_refs.json")
     p.add_argument('-o', '--output_file', type=str, default="blenderbot-400M-distill_dailydialog_raw_zero_0_outs.json")
     args = p.parse_args()
     
@@ -181,10 +164,7 @@ if __name__ == '__main__':
     references, candidates = read_data(ref_file = args.reference_file,
                                        in_file = args.output_file,
                                        mode = args.mode)
-#    v_len = int(0.8*len(candidates))
-#    references = references[v_len:]
-#    candidates = candidates[v_len:]
-    
+
     # Compute metrics
     if args.mode == 'kb':
         knowledge_f1(references, candidates)
@@ -194,5 +174,4 @@ if __name__ == '__main__':
         compute_meteor(references, candidates)
         distinct_ngram(candidates, n=1)
         distinct_ngram(candidates, n=2)
-#        compute_ppl(candidates)
     

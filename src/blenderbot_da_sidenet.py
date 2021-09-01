@@ -406,7 +406,7 @@ def train(args):
         do_train=True,
         do_eval=True,
         evaluation_strategy="steps",
-        eval_steps=5000,
+        eval_steps=1000,
         logging_steps=100,
         # optimization args, the trainer uses the Adam optimizer
         # and has a linear warmup for the learning rate
@@ -470,7 +470,6 @@ def generate_sentences(batch,
       tokenizer.decode(gen_ids.tolist(), skip_special_tokens=True)
       for gen_ids in generated_ids
   ]
-  print(generated_sentences[0])
   return generated_sentences
 
 

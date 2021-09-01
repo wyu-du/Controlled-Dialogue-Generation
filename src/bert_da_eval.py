@@ -17,11 +17,6 @@ from torch import nn
 
 
 class BertPreTrainedModel(PreTrainedModel):
-    """
-    An abstract class to handle weights initialization and a simple interface for downloading and loading pretrained
-    models.
-    """
-
     config_class = BertConfig
     load_tf_weights = load_tf_weights_in_bert
     base_model_prefix = "bert"
@@ -229,11 +224,8 @@ def generate_label(batch, model, tokenizer, args, device='cuda:0'):
   # Generate preds.
   outputs = model(input_ids=features['input_ids'])
   logits = F.log_softmax(outputs.logits, dim=-1)
-#  print(logits)
   preds = torch.argmax(logits, dim=-1)
-#  print(preds)
   outs = [labels[pred.item()] for pred in preds]
-  print(outs)
   return outs
 
 

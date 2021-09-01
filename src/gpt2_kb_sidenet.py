@@ -355,10 +355,10 @@ class Seq2SeqTrainer(Trainer):
 
 def train(args):
     # Load the dataset
-    trn_df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='train')
-    val_df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='validation')
-    if args.dataset == 'convai2_raw':
-        val_df = val_df.iloc[:int(0.8*len(val_df)),:]
+    df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='train')
+    train_len = 153080
+    trn_df = df.iloc[:train_len, :]
+    val_df = df.iloc[train_len:, :]
     
     # Load the pre-trained model
     ckpt_path = None
@@ -386,7 +386,7 @@ def train(args):
         do_train=True,
         do_eval=True,
         evaluation_strategy="steps",
-        eval_steps=5000,
+        eval_steps=1000,
         logging_steps=100, 
         # optimization args, the trainer uses the Adam optimizer
         # and has a linear warmup for the learning rate
@@ -452,11 +452,7 @@ def generate_sentences(batch,
       sid = int(torch.sum(features['attention_mask'][i]).data)
       gen_ids = gen_ids[sid:]
       gen_sent = tokenizer.decode(gen_ids.tolist(), skip_special_tokens=True).strip()
-#      gen_sent = tokenizer.decode(gen_ids.tolist(), skip_special_tokens=False).strip()
-#      gen_sent = gen_sent.replace('[PAD]', '').strip()
-#      gen_sent = gen_sent.split('<|endoftext|>')[0].strip()
       generated_sentences.append(gen_sent)
-  print(generated_sentences[0])
   return generated_sentences
 
 
@@ -464,7 +460,6 @@ def generate_sentences(batch,
 def test(args):
     if args.dataset == 'convai2_raw':
         te_df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='validation')
-        te_df = te_df.iloc[int(0.8*len(te_df)):,:]
     else:
         te_df = parse_profile_data(in_file=f'../data/{args.dataset}.json', mode='test')
     print('Data loaded!!!')
