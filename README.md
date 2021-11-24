@@ -14,7 +14,7 @@ First, pretrain a DA classifier:
 ```
 python gpt2_da_sidenet.py -d dailydialog_raw -t train -f base --pretrain_clf
 ```
-Second, train a SideNet (remeber to replace the `timestamp` and `ckpt` with your own model checkpoint):
+Second, train a SideNet (remember to replace the `timestamp` and `ckpt` with your own model checkpoint):
 ```
 python gpt2_da_sidenet.py -d dailydialog_raw -t ft -f sidenet --timestamp 2021-05-11-07-08-10 --ckpt 2500
 ```
@@ -26,12 +26,12 @@ python gpt2_kb_sidenet.py -d convai2_raw -t train -f sidenet
 ``` 
 
 ## Decoding
-Get the DialoGPT-SideNet predictions on `DailyDialog` full testing set (remeber to replace the `timestamp` and `ckpt` with your own model checkpoint):
+Get the DialoGPT-SideNet predictions on `DailyDialog` full testing set (remember to replace the `timestamp` and `ckpt` with your own model checkpoint):
 ```
 python gpt2_da_sidenet.py -d dailydialog_raw -t eval -f sidenet --timestamp 2021-05-11-07-08-10 --ckpt 2500
 ```
 
-Get the DialoGPT-SideNet predictions on `ConvAI2` full testing set (remeber to replace the `timestamp` and `ckpt` with your own model checkpoint):
+Get the DialoGPT-SideNet predictions on `ConvAI2` full testing set (remember to replace the `timestamp` and `ckpt` with your own model checkpoint):
 ```
 python gpt2_kb_sidenet.py -d convai2_raw -t eval -f sidenet --timestamp 2021-04-26-10-21-06 --ckpt 47839
 ```
@@ -59,7 +59,7 @@ First, train an independent DA classifier:
 ```
 python bert_da_eval.py -d dailydialog_dis -t train -f clf
 ```
-Second, compute the accuracy predicted by the independent DA classifier (remeber to replace the `timestamp`, `ckpt` and `output_file` accordingly):
+Second, compute the accuracy predicted by the independent DA classifier (remember to replace the `timestamp`, `ckpt` and `output_file` accordingly):
 ```
 python bert_da_eval.py -d dailydialog_dis -t pred -f clf \
 --timestamp 2021-04-11-05-57-18 --ckpt 10000 \
